@@ -10,24 +10,22 @@ import {
 } from '@nestjs/common';
 import { data, ReportType } from 'src/data';
 import { v4 as uuid } from 'uuid';
+import { AppService } from './app.service';
 
 @Controller('/report/:type')
 export class AppController {
-  getReportType = (type: string) =>
-    type === 'income' ? ReportType.INCOME : ReportType.EXPENSE;
+  constructor(private readonly appService: AppService) {}
 
   @Get()
   getAllReports(@Param('type') type: string) {
-    const reportType = this.getReportType(type);
-    return data.report.filter((report) => report.type === reportType);
+    const reportType = this.appService.getReportType(type);
+    return this.appService.getAllReports(reportType);
   }
 
   @Get(':id')
   getReportById(@Param('type') type: string, @Param('id') id: string) {
-    const reportType = this.getReportType(type);
-    return data.report
-      .filter((report) => report.type === reportType)
-      .find((report) => report.id === id);
+    const reportType = this.appService.getReportType(type);
+    return this.getReportById(reportType, id);
   }
 
   @Post()
@@ -53,7 +51,7 @@ export class AppController {
     @Param('id') id: string,
     @Param('type') type: string,
   ) {
-    const reportType = this.getReportType(type);
+    const reportType = this.appService.getReportType(type);
     const reportToUpdate = data.report
       .filter((report) => report.type === reportType)
       .find((report) => report.id === id);
