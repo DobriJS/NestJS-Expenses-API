@@ -8,8 +8,7 @@ import {
   Body,
   HttpCode,
 } from '@nestjs/common';
-import { data, ReportType } from 'src/data';
-import { v4 as uuid } from 'uuid';
+import { data } from 'src/data';
 import { AppService } from './app.service';
 
 @Controller('/report/:type')
@@ -33,16 +32,8 @@ export class AppController {
     @Body() { amount, source }: { amount: number; source: string },
     @Param('type') type: string,
   ) {
-    const newReport = {
-      id: uuid(),
-      source,
-      amount,
-      created_at: new Date(),
-      updated_at: new Date(),
-      type: type === 'income' ? ReportType.INCOME : ReportType.EXPENSE,
-    };
-    data.report.push(newReport);
-    return newReport;
+    const reportType = this.appService.getReportType(type);
+    return this.appService.createReport(reportType, { amount, source });
   }
 
   @Put(':id')
