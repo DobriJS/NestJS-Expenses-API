@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ReportType, data } from './data';
 import { Report } from './interfaces/Report';
+import { UpdateReport } from './interfaces/UpdateReport';
 import { v4 as uuid } from 'uuid';
 
 @Injectable()
@@ -31,7 +32,7 @@ export class AppService {
     return newReport;
   }
 
-  updateReport(type: ReportType, id: string, body: Report) {
+  updateReport(type: ReportType, id: string, body: UpdateReport) {
     const reportToUpdate = data.report
       .filter((report) => report.type === type)
       .find((report) => report.id === id);

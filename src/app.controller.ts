@@ -7,30 +7,34 @@ import {
   Param,
   Body,
   HttpCode,
+  ParseUUIDPipe,
+  ParseEnumPipe,
 } from '@nestjs/common';
+import { CreateReportDto, UpdateReportDto } from './dtos/report.dto';
 
 import { AppService } from './app.service';
+import { ReportType } from './data';
 
 @Controller('/report/:type')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getAllReports(@Param('type') type: string) {
+  getAllReports(@Param('type', new ParseEnumPipe(ReportType)) type: string) {
     const reportType = this.appService.getReportType(type);
     return this.appService.getAllReports(reportType);
   }
 
   @Get(':id')
-  getReportById(@Param('type') type: string, @Param('id') id: string) {
+  getReportById(@Param('type', new ParseEnumPipe(ReportType)) type: string, @Param('id', ParseUUIDPipe) id: string) {
     const reportType = this.appService.getReportType(type);
     return this.appService.getReportById(reportType, id);
   }
 
   @Post()
   createReport(
-    @Body() { amount, source }: { amount: number; source: string },
-    @Param('type') type: string,
+    @Body() { amount, source }: CreateReportDto,
+    @Param('type', new ParseEnumPipe(ReportType)) type: string,
   ) {
     const reportType = this.appService.getReportType(type);
     return this.appService.createReport(reportType, { amount, source });
@@ -38,9 +42,9 @@ export class AppController {
 
   @Put(':id')
   updateReport(
-    @Body() body: { amount: number; source: string },
-    @Param('id') id: string,
-    @Param('type') type: string,
+    @Body() body: UpdateReportDto,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('type', new ParseEnumPipe(ReportType)) type: string,
   ) {
     const reportType = this.appService.getReportType(type);
     return this.appService.updateReport(reportType, id, body);
@@ -48,7 +52,7 @@ export class AppController {
 
   @HttpCode(204)
   @Delete(':id')
-  deleteReport(@Param('id') id: string) {
+  deleteReport(@Param('id', ParseUUIDPipe) id: string) {
     return this.appService.deleteReport(id);
   }
 }
