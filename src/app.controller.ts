@@ -10,6 +10,7 @@ import {
   ParseUUIDPipe,
   ParseEnumPipe,
 } from '@nestjs/common';
+import { CreateReportDto } from './dtos/report.dto';
 
 import { AppService } from './app.service';
 import { ReportType } from './data';
@@ -32,7 +33,7 @@ export class AppController {
 
   @Post()
   createReport(
-    @Body() { amount, source }: { amount: number; source: string },
+    @Body() { amount, source }: CreateReportDto,
     @Param('type', new ParseEnumPipe(ReportType)) type: string,
   ) {
     const reportType = this.appService.getReportType(type);
